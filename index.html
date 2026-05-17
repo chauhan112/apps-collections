@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Raja Apps</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Oswald:wght@400;700&family=Poppins:wght@300;400;600&display=swap");
+
+            /* Custom Scrollbar for better aesthetics across themes */
+            ::-webkit-scrollbar {
+                width: 10px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: rgba(150, 150, 150, 0.5);
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+    <body id="body" class="transition-colors duration-500 min-h-screen">
+        <div class="max-w-6xl mx-auto p-6 md:p-12">
+            <!-- Header & Theme Selector -->
+            <header
+                class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6"
+            >
+                <h1
+                    id="page-title"
+                    class="text-4xl md:text-5xl font-bold transition-colors duration-300"
+                >
+                    Raja DevToolKit
+                </h1>
+
+                <div class="flex items-center gap-3">
+                    <label
+                        for="theme-select"
+                        id="theme-label"
+                        class="font-semibold transition-colors duration-300"
+                        >Select Theme:</label
+                    >
+                    <select
+                        id="theme-select"
+                        class="cursor-pointer transition-all duration-300 outline-none"
+                    >
+                        <option value="vintage-paper">Vintage Paper</option>
+                        <option value="cyberpunk">Cyberpunk</option>
+                        <option value="vaporwave">Vaporwave</option>
+                        <option value="neumorphism">Neumorphism</option>
+                        <option value="glass">Glassmorphism</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- App Grid -->
+            <main
+                id="app-grid"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
+                <!-- Cards will be injected here via JavaScript -->
+            </main>
+        </div>
+
+        <script>
+            // App Data Type Structure
+            // type App = { name: string, description: string, url: string }
+            const BASE_URL = "https://apps.rajababu.space/apps";
+            const apps = [
+                {
+                    name: "App-Center",
+                    description: `Another App center but this is not scalable because the build time keeps increasing`,
+                    url: "/apps-center",
+                },
+                {
+                    name: "Dom Ops Logger",
+                    description: `My Personal Advance logging and tasks manager system`,
+                    url: "/dom-ops/latest",
+                },
+                {
+                    name: "Tools Kit",
+                    description: `Another of the app centers (earlier version)`,
+                    url: "/MyTools",
+                },
+                {
+                    name: "Ninox Table Explorer",
+                    description: `Just tools needed for my daily work when working with Ninox`,
+                    url: "/ninox-table-explorer",
+                },
+                {
+                    name: "UI Showcase",
+                    description: `All UI components created so far lies here`,
+                    url: "/ui-showcase",
+                },
+                {
+                    name: "Schedule Generator",
+                    description: `Daily plan and schedule generator tools`,
+                    url: "/schedule-generator",
+                },
+                {
+                    name: "Portfolio",
+                    description: `My Portfolio`,
+                    url: "/chauhan112",
+                },
+            ];
+
+            // Theme Configuration with Tailwind Classes
+            const themes = {
+                "vintage-paper": {
+                    body: "bg-[#f4ecd8] text-[#3e2723] font-[Merriweather]",
+                    header: "text-[#5c4033]",
+                    label: "text-[#5c4033]",
+                    select: "bg-[#faebd7] border-2 border-[#5c4033] text-[#3e2723] px-4 py-2 rounded-none shadow-[2px_2px_0_#5c4033]",
+                    card: "border-2 border-[#5c4033] bg-[#faebd7] shadow-[6px_6px_0_#5c4033] p-8 flex flex-col justify-between transition-transform hover:-translate-y-1 hover:shadow-[8px_8px_0_#5c4033]",
+                    title: "text-2xl font-bold mb-3 text-[#5c4033]",
+                    desc: "text-[#3e2723] mb-6 leading-relaxed",
+                    link: "inline-flex justify-center items-center bg-[#5c4033] text-[#f4ecd8] px-6 py-2.5 font-bold uppercase tracking-wider text-sm transition-colors hover:bg-[#3e2723]",
+                },
+                cyberpunk: {
+                    body: "bg-black text-yellow-400 font-[Oswald] uppercase tracking-wider",
+                    header: "text-pink-500 drop-shadow-[0_0_10px_rgba(236,72,153,0.8)]",
+                    label: "text-cyan-400",
+                    select: "bg-black border-2 border-yellow-400 text-yellow-400 px-4 py-2 font-bold focus:border-pink-500 focus:shadow-[0_0_10px_#ec4899]",
+                    card: "border-2 border-cyan-400 bg-gray-900 shadow-[4px_4px_0_#ec4899] p-8 flex flex-col justify-between transition-all hover:shadow-[8px_8px_0_#eab308] relative overflow-hidden group",
+                    title: "text-2xl font-bold mb-3 text-yellow-400 group-hover:text-cyan-400 transition-colors",
+                    desc: "text-cyan-100 mb-6 normal-case font-sans tracking-normal opacity-90",
+                    link: "inline-flex justify-center items-center bg-pink-600 text-white border-2 border-pink-400 px-6 py-2.5 font-bold transition-all hover:bg-yellow-400 hover:text-black hover:border-yellow-400 shadow-[0_0_10px_#ec4899]",
+                },
+                vaporwave: {
+                    body: "bg-gradient-to-br from-indigo-300 via-purple-400 to-pink-300 text-white font-[Poppins]",
+                    header: "text-cyan-300 font-black tracking-widest drop-shadow-[3px_3px_0_#db2777]",
+                    label: "text-white font-bold drop-shadow-md",
+                    select: "bg-white/20 backdrop-blur-md border border-white/40 text-purple-900 font-bold px-4 py-2 rounded-xl shadow-lg",
+                    card: "bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-8 flex flex-col justify-between shadow-[0_8px_32px_rgba(31,38,135,0.37)] transition-all hover:bg-white/30 hover:-translate-y-2",
+                    title: "text-2xl font-bold mb-3 text-cyan-200 drop-shadow-[2px_2px_0_#9d174d]",
+                    desc: "text-white mb-6 leading-relaxed font-light drop-shadow-md",
+                    link: "inline-flex justify-center items-center bg-gradient-to-r from-cyan-400 to-blue-500 text-white rounded-full px-6 py-2.5 font-bold shadow-lg transition-all hover:from-pink-400 hover:to-purple-500 hover:scale-105",
+                },
+                neumorphism: {
+                    body: "bg-[#e0e5ec] text-[#4a5568] font-[Poppins]",
+                    header: "text-[#2d3748]",
+                    label: "text-[#4a5568]",
+                    select: "bg-[#e0e5ec] rounded-xl text-[#4a5568] px-4 py-2 font-semibold shadow-[4px_4px_8px_rgb(163,177,198,0.6),-4px_-4px_8px_rgba(255,255,255,0.5)] appearance-none",
+                    card: "bg-[#e0e5ec] rounded-[2rem] p-8 flex flex-col justify-between shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] transition-all hover:shadow-[12px_12px_20px_rgb(163,177,198,0.7),-12px_-12px_20px_rgba(255,255,255,0.6)]",
+                    title: "text-2xl font-bold mb-3 text-[#2d3748]",
+                    desc: "text-[#718096] mb-6 leading-relaxed",
+                    link: "inline-flex justify-center items-center bg-[#e0e5ec] text-[#4a5568] rounded-xl px-6 py-2.5 font-bold shadow-[4px_4px_8px_rgb(163,177,198,0.6),-4px_-4px_8px_rgba(255,255,255,0.5)] transition-all hover:shadow-[inset_2px_2px_5px_rgb(163,177,198,0.6),inset_-2px_-2px_5px_rgba(255,255,255,0.5)] active:shadow-[inset_4px_4px_8px_rgb(163,177,198,0.6),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]",
+                },
+                glass: {
+                    body: "bg-gradient-to-tr from-slate-900 via-indigo-900 to-slate-900 text-white font-[Poppins]",
+                    header: "text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300 font-bold tracking-wide drop-shadow-md",
+                    label: "text-blue-200 font-medium",
+                    select: "bg-white/10 backdrop-blur-md border border-white/20 text-white px-4 py-2 rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)] outline-none focus:bg-white/20",
+                    card: "bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 flex flex-col justify-between shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-white/20 hover:border-white/30 hover:-translate-y-1",
+                    title: "text-2xl font-bold mb-3 text-white tracking-wide",
+                    desc: "text-indigo-100/80 mb-6 leading-relaxed font-light",
+                    link: "inline-flex justify-center items-center bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl px-6 py-2.5 font-semibold shadow-lg transition-all hover:bg-white/30 hover:border-white/40",
+                },
+            };
+
+            // DOM Elements
+            const bodyEl = document.getElementById("body");
+            const headerEl = document.getElementById("page-title");
+            const labelEl = document.getElementById("theme-label");
+            const selectEl = document.getElementById("theme-select");
+            const gridEl = document.getElementById("app-grid");
+
+            // Function to apply theme
+            function applyTheme(themeName) {
+                const theme = themes[themeName];
+                if (!theme) return;
+
+                // Update Global Elements
+                bodyEl.className = `transition-all duration-500 min-h-screen ${theme.body}`;
+                headerEl.className = `text-4xl md:text-5xl font-bold transition-colors duration-300 ${theme.header}`;
+                labelEl.className = `font-semibold transition-colors duration-300 ${theme.label}`;
+                selectEl.className = `cursor-pointer transition-all duration-300 outline-none ${theme.select}`;
+
+                // Render App Cards
+                gridEl.innerHTML = apps
+                    .map(
+                        (app) => `
+        <div class="${theme.card}">
+          <div>
+            <h2 class="${theme.title}">${app.name}</h2>
+            <p class="${theme.desc}">${app.description}</p>
+          </div>
+          <a href="${BASE_URL}${app.url}" class="${theme.link}" aria-label="Open ${app.name}">
+            Launch App
+          </a>
+        </div>
+      `,
+                    )
+                    .join("");
+            }
+
+            // Event Listener for Theme Selector
+            selectEl.addEventListener("change", (e) => {
+                applyTheme(e.target.value);
+                localStorage.setItem("gib21-tools-theme", e.target.value);
+            });
+
+            // Initialize with default theme
+            // on dom content loaded
+            window.addEventListener("DOMContentLoaded", () => {
+                const defaultTheme =
+                    localStorage.getItem("gib21-tools-theme") || "glass";
+
+                selectEl.value = defaultTheme;
+                applyTheme(defaultTheme);
+            });
+        </script>
+    </body>
+</html>
