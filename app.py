@@ -2,7 +2,7 @@ import secrets
 import string
 import datetime
 import os
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_apscheduler import APScheduler
 
@@ -18,12 +18,16 @@ def main_dashboard():
     # Serves your existing index.html from the root folder
     return send_from_directory('.', 'index.html')
 
-# --- ROUTE 2: SERVE ALL YOUR APPS ---
-# Access via: domain.com/apps/share-app/index.html
 @app.route('/apps/<path:path>')
 def serve_apps(path):
-    print(path)
+    full_path = os.path.join('./appsDeployed', path)
+    if os.path.isdir(full_path) and not path.endswith('/'):
+        return redirect(f'/apps/{path}/')
+    if os.path.isdir(full_path):
+        return send_from_directory(full_path, 'index.html')
     return send_from_directory('./appsDeployed', path)
+
+
 
 # --- ROUTE 3: THE SECRET SHORT LINKS ---
 # Matches domain.com/1, domain.com/2 etc.

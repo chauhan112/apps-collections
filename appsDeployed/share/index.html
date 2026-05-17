@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Create ShortShare</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            #toast {
+                transition: all 0.3s ease-in-out;
+            }
+        </style>
+    </head>
+    <body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+        <!-- Notification UI -->
+        <div
+            id="toast"
+            class="fixed top-5 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none transform -translate-y-5 z-50"
+        >
+            <div
+                id="toast-bg"
+                class="bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700"
+            >
+                <span id="toast-icon">✨</span>
+                <span id="toast-message" class="text-sm font-bold"></span>
+            </div>
+        </div>
+
+        <div
+            class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm border border-slate-100"
+        >
+            <div class="text-center mb-6">
+                <h1
+                    class="text-4xl font-black text-slate-900 tracking-tighter italic"
+                >
+                    Short<span class="text-indigo-600">Share</span>
+                </h1>
+                <p
+                    class="text-slate-400 text-[10px] font-black uppercase mt-2 tracking-widest"
+                >
+                    Create Secure Link
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <textarea
+                    id="content"
+                    placeholder="Paste data here..."
+                    class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl h-32 focus:border-indigo-500 outline-none transition-all resize-none font-medium"
+                ></textarea>
+
+                <div class="flex items-center justify-between px-1">
+                    <span
+                        class="text-[10px] font-black text-slate-400 uppercase"
+                        >Expiry</span
+                    >
+                    <select
+                        id="expiry"
+                        class="text-xs font-bold text-indigo-600 bg-transparent outline-none"
+                    >
+                        <option value="1">1 HOUR</option>
+                        <option value="24" selected>24 HOURS</option>
+                    </select>
+                </div>
+
+                <button
+                    onclick="share()"
+                    class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black hover:bg-indigo-700 active:scale-95 transition-all shadow-lg"
+                >
+                    GENERATE LINK
+                </button>
+
+                <div
+                    id="result"
+                    class="mt-6 p-4 bg-slate-900 rounded-2xl hidden space-y-3"
+                >
+                    <div>
+                        <p
+                            class="text-[10px] font-black text-indigo-400 uppercase mb-1"
+                        >
+                            Your Link
+                        </p>
+                        <div class="flex gap-2">
+                            <input
+                                type="text"
+                                id="share-url"
+                                readonly
+                                class="w-full bg-slate-800 text-white p-2 text-xs rounded-lg border border-slate-700"
+                            />
+                            <button
+                                onclick="copy('share-url')"
+                                class="text-indigo-400 font-bold text-xs"
+                            >
+                                COPY
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <p
+                            class="text-[10px] font-black text-indigo-400 uppercase mb-1"
+                        >
+                            5-Digit PIN
+                        </p>
+                        <div class="flex gap-2">
+                            <input
+                                type="text"
+                                id="share-pin"
+                                readonly
+                                class="w-full bg-slate-800 text-indigo-400 p-2 text-lg font-mono font-bold rounded-lg border border-slate-700 text-center tracking-widest"
+                            />
+                            <button
+                                onclick="copy('share-pin')"
+                                class="text-indigo-400 font-bold text-xs"
+                            >
+                                COPY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function notify(msg, type = "success") {
+                const t = document.getElementById("toast");
+                document.getElementById("toast-message").innerText = msg;
+                document.getElementById("toast-bg").className =
+                    type === "error"
+                        ? "bg-red-600 text-white px-6 py-3 rounded-xl flex items-center gap-3"
+                        : "bg-slate-900 text-white px-6 py-3 rounded-xl flex items-center gap-3";
+                t.classList.remove(
+                    "opacity-0",
+                    "-translate-y-5",
+                    "pointer-events-none",
+                );
+                setTimeout(
+                    () =>
+                        t.classList.add(
+                            "opacity-0",
+                            "-translate-y-5",
+                            "pointer-events-none",
+                        ),
+                    2500,
+                );
+            }
+
+            async function share() {
+                const content = document.getElementById("content").value;
+                if (!content) return notify("Enter data!", "error");
+
+                const res = await fetch("/api/share", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        content,
+                        expiry: document.getElementById("expiry").value,
+                    }),
+                });
+                const data = await res.json();
+                document.getElementById("share-url").value = data.link;
+                document.getElementById("share-pin").value = data.passcode;
+                document.getElementById("result").classList.remove("hidden");
+                notify("Link Generated!");
+            }
+
+            function copy(id) {
+                navigator.clipboard.writeText(
+                    document.getElementById(id).value,
+                );
+                notify("Copied!");
+            }
+        </script>
+    </body>
+</html>
