@@ -238,4 +238,4 @@ if __name__ == '__main__':
     app.run(debug=True, port=8003, host='0.0.0.0')
 
 
-# pm2 start app.py --interpreter uv --name "apps-center" -- run app.py
+# pm2 start "uv run gunicorn --bind 0.0.0.0:8003 --workers 1 --threads 4 app:app" --name "apps-center"
