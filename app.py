@@ -4,7 +4,8 @@ import datetime
 import os
 import time
 import hashlib
-from flask import Flask, render_template, request, jsonify, send_from_directory, redirect
+import requests as http_requests
+from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_apscheduler import APScheduler
 
@@ -132,6 +133,51 @@ def serve_apps(path):
     if os.path.isdir(full_path):
         return send_from_directory(full_path, 'index.html')
     return send_from_directory('./appsDeployed', path)
+
+
+# --- REVERSE PROXY: /backend/* -> any-backend (Django on :8500) ---
+BACKEND_TARGET = os.environ.get('BACKEND_TARGET', 'http://127.0.0.1:8500')
+HOP_BY_HOP = {
+    'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
+    'te', 'trailers', 'transfer-encoding', 'upgrade', 'host', 'content-length',
+}
+
+
+def _forward(path):
+    url = f"{BACKEND_TARGET}/{path}"
+    # Preserve query string
+    if request.query_string:
+        url += '?' + request.query_string.decode()
+
+    # Forward inbound headers, dropping hop-by-hop ones
+    headers = {k: v for k, v in request.headers.items() if k.lower() not in HOP_BY_HOP}
+    body = request.get_data()
+
+    try:
+        upstream = http_requests.request(
+            method=request.method,
+            url=url,
+            headers=headers,
+            data=body,
+            allow_redirects=False,
+            stream=True,
+            timeout=60,
+        )
+    except http_requests.RequestException as exc:
+        print(f"[PROXY] backend unreachable: {exc}")
+        return jsonify({"error": "Backend unavailable"}), 502
+
+    resp_headers = [(k, v) for k, v in upstream.raw.headers.items() if k.lower() not in HOP_BY_HOP]
+    return Response(upstream.iter_content(chunk_size=8192),
+                    status=upstream.status_code,
+                    headers=resp_headers)
+
+
+@app.route('/backend')
+@app.route('/backend/')
+@app.route('/backend/<path:path>')
+def backend_proxy(path=''):
+    return _forward(path)
 
 
 # --- ROUTE 3: THE SECRET SHORT LINKS ---
