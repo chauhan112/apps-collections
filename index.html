@@ -67,53 +67,18 @@
             // App Data Type Structure
             // type App = { name: string, description: string, url: string }
             const BASE_URL = "http://apps.rajababu.space/apps";
-            const apps = [
-                // {
-                //     name: "App-Center",
-                //     description: `Another App center but this is not scalable because the build time keeps increasing`,
-                //     url: "/apps-center",
-                // },
-                {
-                    name: "Dom Ops Logger",
-                    description: `My Personal Advance logging and tasks manager system`,
-                    url: "/dom-ops/latest",
-                },
-                // {
-                //     name: "Tools Kit",
-                //     description: `Another of the app centers (earlier version)`,
-                //     url: "/MyTools",
-                // },
-                {
-                    name: "Ninox Table Explorer",
-                    description: `Just tools needed for my daily work when working with Ninox`,
-                    url: "/ninox-table-explorer",
-                },
-                {
-                    name: "UI Showcase",
-                    description: `All UI components created so far lies here`,
-                    url: "/ui-showcase",
-                },
-                {
-                    name: "Schedule Generator",
-                    description: `Daily plan and schedule generator tools`,
-                    url: "/schedule-generator",
-                },
-                {
-                    name: "Portfolio",
-                    description: `My Portfolio`,
-                    url: "/chauhan112",
-                },
-                {
-                    name: "Share",
-                    description: `Share Data to anyone`,
-                    url: "/share",
-                },
-                {
-                    name: "Date Diff Calc",
-                    description: `Calculate difference between two dates`,
-                    url: "/date-diff.html",
-                },
-            ];
+            // Apps are loaded from apps.json (served at /apps.json) instead of
+            // being hardcoded here. Updated automatically by `invoke deploy`.
+            let apps = [];
+
+            async function loadApps() {
+                try {
+                    const res = await fetch("/apps.json", { cache: "no-store" });
+                    if (res.ok) apps = await res.json();
+                } catch (err) {
+                    console.error("Could not load apps.json", err);
+                }
+            }
 
             // Theme Configuration with Tailwind Classes
             const themes = {
@@ -213,10 +178,11 @@
 
             // Initialize with default theme
             // on dom content loaded
-            window.addEventListener("DOMContentLoaded", () => {
+            window.addEventListener("DOMContentLoaded", async () => {
                 const defaultTheme =
                     localStorage.getItem("gib21-tools-theme") || "glass";
 
+                await loadApps();
                 selectEl.value = defaultTheme;
                 applyTheme(defaultTheme);
             });

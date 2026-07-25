@@ -125,6 +125,14 @@ def main_dashboard():
     return send_from_directory('.', 'index.html')
 
 
+@app.route('/apps.json')
+def apps_manifest():
+    """App list consumed by index.html; updated automatically by `invoke deploy`."""
+    resp = send_from_directory('.', 'apps.json')
+    resp.headers['Cache-Control'] = 'no-store'
+    return resp
+
+
 @app.route('/apps/<path:path>')
 def serve_apps(path):
     full_path = os.path.join('./appsDeployed', path)
