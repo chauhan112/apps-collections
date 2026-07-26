@@ -15,11 +15,6 @@
         "url": "/ui-showcase"
     },
     {
-        "name": "Schedule Generator",
-        "description": "Daily plan and schedule generator tools",
-        "url": "/schedule-generator"
-    },
-    {
         "name": "Portfolio",
         "description": "My Portfolio",
         "url": "/chauhan112"
@@ -35,8 +30,13 @@
         "url": "/date-diff.html"
     },
     {
-        "name": "Tasks Frontend",
-        "description": "Tasks workspace frontend",
-        "url": "/Tasks-Frontend"
+        "name": "Nested Tasks",
+        "description": "Nested Tasks workspace ",
+        "url": "/nested-tasks"
+    },
+    {
+        "name": "Scheduler",
+        "description": "plan for day and track the progress",
+        "url": "/scheduler/latest"
     }
 ]
