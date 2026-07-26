@@ -6,10 +6,29 @@ import time
 import hashlib
 import requests as http_requests
 from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, Response
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_apscheduler import APScheduler
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.')
+
+
+def _load_env_file(path='.env'):
+    """Minimal .env loader: KEY=VALUE lines -> os.environ (without overriding set vars)."""
+    env_path = os.path.join(os.path.dirname(__file__), path)
+    if not os.path.isfile(env_path):
+        return
+    with open(env_path) as fh:
+        for raw in fh:
+            line = raw.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            key, _, value = line.partition('=')
+            key = key.removeprefix('export ').strip()
+            value = value.strip().strip('"').strip("'")
+            os.environ.setdefault(key, value)
+
+
+_load_env_file()
+app.config['BASE_URL'] = os.environ.get('BASE_URL', '/apps').rstrip('/')
 scheduler = APScheduler()
 
 db = {}
@@ -121,8 +140,8 @@ def verify_captcha_solution(share_id, solution):
 # --- ROUTE 1: YOUR MAIN HOME PAGE ---
 @app.route('/')
 def main_dashboard():
-    # Serves your existing index.html from the root folder
-    return send_from_directory('.', 'index.html')
+    # Renders index.html as a Jinja template; BASE_URL comes from .env via config.
+    return render_template('index.html', base_url=app.config['BASE_URL'])
 
 
 @app.route('/apps.json')
