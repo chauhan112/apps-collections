@@ -4,6 +4,7 @@ import datetime
 import os
 import time
 import hashlib
+import json
 import requests as http_requests
 from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, Response
 from flask_apscheduler import APScheduler
@@ -140,16 +141,18 @@ def verify_captcha_solution(share_id, solution):
 # --- ROUTE 1: YOUR MAIN HOME PAGE ---
 @app.route('/')
 def main_dashboard():
-    # Renders index.html as a Jinja template; BASE_URL comes from .env via config.
-    return render_template('index.html', base_url=app.config['BASE_URL'])
-
-
-@app.route('/apps.json')
-def apps_manifest():
-    """App list consumed by index.html; updated automatically by `invoke deploy`."""
-    resp = send_from_directory('.', 'apps.json')
-    resp.headers['Cache-Control'] = 'no-store'
-    return resp
+    # Renders index.html as a Jinja template. BASE_URL comes from .env and the
+    # apps list is read from apps.json at request time, so `invoke deploy`
+    # additions appear on the next page load (no restart needed).
+    apps_json_path = os.path.join(os.path.dirname(__file__), 'apps.json')
+    apps_list = []
+    if os.path.isfile(apps_json_path):
+        with open(apps_json_path) as fh:
+            try:
+                apps_list = json.load(fh)
+            except json.JSONDecodeError:
+                apps_list = []
+    return render_template('index.html', base_url=app.config['BASE_URL'], apps=apps_list)
 
 
 @app.route('/apps/<path:path>')

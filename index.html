@@ -67,18 +67,9 @@
             // App Data Type Structure
             // type App = { name: string, description: string, url: string }
             const BASE_URL = {{ base_url|tojson }};
-            // Apps are loaded from apps.json (served at /apps.json) instead of
-            // being hardcoded here. Updated automatically by `invoke deploy`.
-            let apps = [];
-
-            async function loadApps() {
-                try {
-                    const res = await fetch("/apps.json", { cache: "no-store" });
-                    if (res.ok) apps = await res.json();
-                } catch (err) {
-                    console.error("Could not load apps.json", err);
-                }
-            }
+            // App list injected server-side from apps.json (via Jinja).
+            // Updated automatically by `invoke deploy`; visible on next page load.
+            const apps = {{ apps|tojson }};
 
             // Theme Configuration with Tailwind Classes
             const themes = {
@@ -178,11 +169,10 @@
 
             // Initialize with default theme
             // on dom content loaded
-            window.addEventListener("DOMContentLoaded", async () => {
+            window.addEventListener("DOMContentLoaded", () => {
                 const defaultTheme =
                     localStorage.getItem("gib21-tools-theme") || "glass";
 
-                await loadApps();
                 selectEl.value = defaultTheme;
                 applyTheme(defaultTheme);
             });
