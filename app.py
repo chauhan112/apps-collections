@@ -203,9 +203,12 @@ def _forward(path):
                     headers=resp_headers)
 
 
-@app.route('/backend')
-@app.route('/backend/')
-@app.route('/backend/<path:path>')
+_PROXY_METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+
+
+@app.route('/backend', methods=_PROXY_METHODS, provide_automatic_options=False)
+@app.route('/backend/', methods=_PROXY_METHODS, provide_automatic_options=False)
+@app.route('/backend/<path:path>', methods=_PROXY_METHODS, provide_automatic_options=False)
 def backend_proxy(path=''):
     return _forward(path)
 
