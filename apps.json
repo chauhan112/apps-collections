@@ -38,5 +38,10 @@
         "name": "Scheduler",
         "description": "plan for day and track the progress",
         "url": "/scheduler/latest"
+    },
+    {
+        "name": "Notes",
+        "description": "Notes, Syntax and password manager",
+        "url": "/notes"
     }
 ]
