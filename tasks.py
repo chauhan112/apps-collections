@@ -125,3 +125,6 @@ def deploy(c, repo="git@github.com:chauhan112/Tasks-Frontend.git", name="Tasks-F
     if register:
         card_title = title or name.replace("-", " ").replace("_", " ").strip()
         _register_app(card_title, description, deploy_name)
+
+
+# inv deploy -r git@github.com:chauhan112/Notes-frontend.git -n "notes" --no-register
