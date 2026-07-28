@@ -128,3 +128,6 @@ def deploy(c, repo="git@github.com:chauhan112/Tasks-Frontend.git", name="Tasks-F
 
 
 # inv deploy -r git@github.com:chauhan112/Notes-frontend.git -n "notes" --no-register
+
+# inv deploy -r git@github.com:chauhan112/Tasks-Frontend.git -n "nested-tasks" --no-register
+
