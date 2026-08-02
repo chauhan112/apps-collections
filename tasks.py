@@ -132,3 +132,5 @@ def deploy(c, repo="git@github.com:chauhan112/Tasks-Frontend.git", name="Tasks-F
 # inv deploy -r git@github.com:chauhan112/Tasks-Frontend.git -n "nested-tasks" --no-register
 
 # inv deploy -r git@github.com:chauhan112/Scheduler-frontend.git -n "nested-tasks" --no-register
+
+# inv deploy -r git@github.com:chauhan112/ai-chats-frontend.git -n "ai-chats" --no-register
