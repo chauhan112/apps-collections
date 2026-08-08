@@ -37,7 +37,7 @@
     {
         "name": "Notes",
         "description": "Notes, Syntax and password manager",
-        "url": "/notes"
+        "url": "/notes/latest"
     },
     {
         "name": "AI Chats",
