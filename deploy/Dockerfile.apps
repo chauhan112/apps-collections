@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1
+#
+# Dockerfile for the MAIN app: apps-collections (Flask gateway).
+# This is the ONLY service published to the host. Both Django backends are
+# reachable from here over the compose network by service name.
+
+ARG PYTHON_VERSION=3.14
+FROM python:${PYTHON_VERSION}-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_PROJECT_ENVIRONMENT=/app/.venv \
+    PATH="/app/.venv/bin:${PATH}"
+
+WORKDIR /app
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Dependency layer (cached)
+ARG APP_DIR=.
+COPY ${APP_DIR}/pyproject.toml ${APP_DIR}/uv.lock ${APP_DIR}/README.md ./
+RUN uv sync --frozen --no-install-project
+
+# Application source (app.py, index.html, templates/, appsDeployed/, apps.json)
+COPY ${APP_DIR}/ ./
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8003", "--workers", "1", "--threads", "4", "app:app"]

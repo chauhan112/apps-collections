@@ -1,0 +1,14 @@
+# Cloned private repos live here (never committed).
+services/*
+!services/.gitkeep
+
+# Real container env files hold secrets (Directus key, etc.) -> never commit.
+# Templates ship as env/*.env.example.
+env/*.env
+!env/*.env.example
+
+# Compose-level port override (BACKEND_PORT).
+.env
+
+# Persistent SQLite DBs (one file per backend) -> never commit.
+data/

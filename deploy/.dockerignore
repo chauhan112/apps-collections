@@ -1,0 +1,26 @@
+# Keep the build context lean and keep host-local state out of the images.
+**/.git
+**/.git/**
+**/.venv
+**/.venv/**
+**/__pycache__
+**/__pycache__/**
+**/*.pyc
+**/*.pyo
+**/*.sqlite3
+**/*.sqlite3-journal
+**/node_modules
+**/.DS_Store
+**/db.sqlite3
+
+# Container env is provided at runtime via docker-compose (env_file), not baked in.
+**/.env
+env/**
+
+# Don't ship clone helper / docs into the image.
+clone.sh
+README.md
+
+# Persistent SQLite DBs live on the host (bind-mounted), not in the image.
+data
+data/**

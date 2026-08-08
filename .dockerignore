@@ -1,0 +1,27 @@
+# Build context for the MAIN app (apps-collections root).
+# Keep it lean and keep private/huge dirs out of the apps image.
+.git
+.git/**
+.venv
+.venv/**
+venv/
+__pycache__
+**/__pycache__
+**/*.pyc
+**/*.pyo
+
+# The deploy/ dir holds docker config + the cloned backends -> never needed here.
+deploy
+deploy/**
+
+# Local env is provided at runtime via docker-compose, not baked in.
+.env
+.envrc
+
+# Misc host state
+temp
+temp/**
+*.sqlite3
+*.sqlite3-journal
+.DS_Store
+**/.DS_Store
