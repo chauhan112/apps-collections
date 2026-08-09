@@ -2,7 +2,6 @@ import secrets
 import string
 import datetime
 import os
-import time
 import hashlib
 import json
 import requests as http_requests
@@ -34,6 +33,30 @@ scheduler = APScheduler()
 
 db = {}
 counter = 1
+
+
+# --- CORS: allow cross-origin requests to the gateway and the /backend/* proxy ---
+# Set CORS_ORIGINS to a comma-separated allowlist (e.g. "https://a.com,https://b.com")
+# in .env; "*" (default) permits any origin.
+CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*').strip()
+CORS_METHODS = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+
+
+@app.after_request
+def _add_cors_headers(resp):
+    """Attach CORS headers to every response, including proxied backend ones."""
+    origin = request.headers.get('Origin')
+    if CORS_ORIGINS == '*':
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+    elif origin and origin in [o.strip() for o in CORS_ORIGINS.split(',') if o.strip()]:
+        resp.headers['Access-Control-Allow-Origin'] = origin
+        resp.headers['Vary'] = 'Origin'
+    resp.headers['Access-Control-Allow-Methods'] = CORS_METHODS
+    # Reflect whatever headers the preflight asked for; fall back to a sane default.
+    requested = request.headers.get('Access-Control-Request-Headers')
+    resp.headers['Access-Control-Allow-Headers'] = requested or 'Content-Type, Authorization'
+    resp.headers['Access-Control-Max-Age'] = '600'
+    return resp
 
 # Security tracking
 attempt_tracker = {}  # {ip: {share_id: {'attempts': count, 'last_attempt': timestamp}}}
