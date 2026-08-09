@@ -8,6 +8,16 @@ TEMP_DIR = Path("temp")
 APPS_DIR = Path("appsDeployed")
 APPS_JSON = Path("apps.json")
 
+# --- Docker backend stack (deploy/ ships in this repo) ---
+DEPLOY_DIR = Path("deploy")
+SERVICES_DIR = DEPLOY_DIR / "services"
+DATA_DIR = DEPLOY_DIR / "data"
+ENV_DIR = DEPLOY_DIR / "env"
+BACKEND_REPO = "git@github.com:chauhan112/backend.git"
+BACKEND_DIR = SERVICES_DIR / "backend"
+BACKEND_ENV = ENV_DIR / "backend.env"
+BACKEND_SQLITE = DATA_DIR / "backend.sqlite3"
+
 
 @task(
     help={
@@ -77,7 +87,7 @@ def _register_app(title, description, deploy_name):
 
 
 @task(help={"name": "Folder name under temp/ to build"})
-def build(c, name="Tasks-Frontend"):
+def _build(c, name="Tasks-Frontend"):
     """Run bun install + bun run build for the Vite app in temp/<name>."""
     target = TEMP_DIR / name
     if not target.exists():
@@ -111,7 +121,7 @@ def deploy(c, repo="git@github.com:chauhan112/Tasks-Frontend.git", name="Tasks-F
     deploys are never overwritten. Prints the final served URL.
     """
     setup(c, repo=repo, name=name, backend_url=backend_url)
-    build(c, name=name)
+    _build(c, name=name)
 
     dist = TEMP_DIR / name / "dist"
     deploy_name = _unique_deploy_name(name)
@@ -125,6 +135,52 @@ def deploy(c, repo="git@github.com:chauhan112/Tasks-Frontend.git", name="Tasks-F
     if register:
         card_title = title or name.replace("-", " ").replace("_", " ").strip()
         _register_app(card_title, description, deploy_name)
+
+
+@task(
+    help={
+        "repo": "Git URL of the Django backend to clone",
+        "up": "Bring the stack up after building (default: true)",
+        "no-cache": "Build the image without the Docker layer cache",
+        "remove-orphans": "Remove stale containers on up (default: true)",
+    }
+)
+def deploy_backend(c, repo=BACKEND_REPO, up=True, no_cache=False, remove_orphans=True):
+    """Refetch the backend service clean and (re)build its Docker container.
+
+    Mirrors the frontend `deploy` flow for the backend: wipe services/backend,
+    git clone it fresh, scaffold env/SQLite if missing (existing files are kept),
+    then docker compose build the backend image (and optionally `up -d`).
+    """
+    # 1. Clean: remove the existing clone so we refetch fresh.
+    if BACKEND_DIR.exists():
+        c.run(f"rm -rf {BACKEND_DIR}")
+        print(f"[deploy-backend] Removed {BACKEND_DIR}")
+
+    # 2. Fresh clone.
+    SERVICES_DIR.mkdir(parents=True, exist_ok=True)
+    c.run(f"git clone {repo} {BACKEND_DIR}")
+    print(f"[deploy-backend] Cloned {repo} -> {BACKEND_DIR}")
+
+    # 3. Scaffold env + SQLite if missing (never clobber existing secrets/data).
+    ENV_DIR.mkdir(parents=True, exist_ok=True)
+    if not BACKEND_ENV.exists() and (ENV_DIR / "backend.env.example").exists():
+        c.run(f"cp {ENV_DIR / 'backend.env.example'} {BACKEND_ENV}")
+        print(f"[deploy-backend] Seeded {BACKEND_ENV} from example")
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    if not BACKEND_SQLITE.exists():
+        BACKEND_SQLITE.touch()
+        print(f"[deploy-backend] Created {BACKEND_SQLITE}")
+
+    # 4. Build the backend container, then bring the stack up.
+    with c.cd(str(DEPLOY_DIR)):
+        build_cmd = "docker compose build backend" + (" --no-cache" if no_cache else "")
+        c.run(build_cmd)
+        print("[deploy-backend] Built backend image")
+        if up:
+            up_cmd = "docker compose up -d" + (" --remove-orphans" if remove_orphans else "")
+            c.run(up_cmd)
+            print("[deploy-backend] Stack is up -> http://localhost:8003")
 
 
 # inv deploy -r git@github.com:chauhan112/Notes-frontend.git -n "notes" --no-register
