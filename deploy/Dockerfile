@@ -1,16 +1,14 @@
 # syntax=docker/dockerfile:1
 #
-# Shared Dockerfile for BOTH Django backends (generic-backend & backend).
-# It is specialized entirely through build args so the two services in
-# docker-compose.yml can build from the same file:
+# Dockerfile for the Django `backend` service. It is specialized via build args:
 #
-#   APP_DIR          sub-folder (inside the build context) holding one repo
-#   PYTHON_VERSION   python:3.13 (generic-backend) / python:3.14 (backend)
+#   APP_DIR          sub-folder (inside the build context) holding the repo
+#   PYTHON_VERSION   python:3.14 (backend)
 #
-# The cloned private repos live on the host under deploy/services/<repo> and
-# are COPYed in here -- nothing is cloned during the build.
+# The cloned private repo lives on the host under deploy/services/backend and
+# is COPYed in here -- nothing is cloned during the build.
 
-ARG PYTHON_VERSION=3.13
+ARG PYTHON_VERSION=3.14
 FROM python:${PYTHON_VERSION}-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -22,8 +20,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # gcc: a few wheels still need a compiler; small safety net.
-# git: generic-backend imports gitpython at startup (handlers/rlib).
-RUN apt-get update && apt-get install -y --no-install-recommends gcc git \
+RUN apt-get update && apt-get install -y --no-install-recommends gcc \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv (matches the repos' own tooling).
