@@ -26,6 +26,11 @@ services:
       BACKEND_TARGET: ${BACKEND_TARGET:-http://backend:8500}
     ports:
       - "${APPS_PORT:-8003}:${APPS_PORT:-8003}"
+    # Serve deploys live: appsDeployed/ and apps.json are bind-mounted so
+    # `invoke deploy` is reflected immediately without rebuilding the image.
+    volumes:
+      - ../appsDeployed:/app/appsDeployed:ro
+      - ../apps.json:/app/apps.json:ro
     command:
       - gunicorn
       - --bind

@@ -43,5 +43,15 @@
         "name": "AI Chats",
         "description": "own personal ai chats with more features",
         "url": "/ai-chats/latest"
+    },
+    {
+        "name": "Cam Scanner",
+        "description": "app like cam scanner, convert image to pdf, clean and compress images",
+        "url": "/scanner/latest"
+    },
+    {
+        "name": "Coding Agent",
+        "description": "Code agent to build app automously",
+        "url": "https://code-agent.rajababu.space/"
     }
 ]
