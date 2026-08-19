@@ -152,7 +152,7 @@
             <h2 class="${theme.title}">${app.name}</h2>
             <p class="${theme.desc}">${app.description}</p>
           </div>
-          <a href="${BASE_URL}${app.url}" class="${theme.link}" aria-label="Open ${app.name}">
+          <a href="${app.url.startsWith('http') ? app.url : BASE_URL + app.url}" class="${theme.link}" aria-label="Open ${app.name}">
             Launch App
           </a>
         </div>

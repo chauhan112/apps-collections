@@ -29,6 +29,7 @@ def _load_env_file(path='.env'):
 
 _load_env_file()
 app.config['BASE_URL'] = os.environ.get('BASE_URL', '/apps').rstrip('/')
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 scheduler = APScheduler()
 
 db = {}
