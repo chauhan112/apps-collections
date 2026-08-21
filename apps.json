@@ -53,5 +53,10 @@
         "name": "Coding Agent",
         "description": "Code agent to build app automously",
         "url": "https://code-agent.rajababu.space/"
+    },
+    {
+        "name": "GLM Quota",
+        "description": "live update of quota uses",
+        "url": "https://1-blog.github.io/quota/"
     }
 ]
