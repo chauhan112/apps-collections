@@ -193,5 +193,4 @@ def deploy_backend(c, repo=BACKEND_REPO, up=True, no_cache=False, remove_orphans
 
 # inv deploy -r git@github.com:chauhan112/doa-frontend-react.git -n "doa" --no-register
 
-
 # inv deploy -r git@github.com:chauhan112/scanner-frontend.git -n "scanner" --no-register
