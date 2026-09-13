@@ -61,8 +61,9 @@ The backend itself and its database are started from their own locations:
 # PostgreSQL (~/timeline/global/backend-db)
 cd ~/timeline/global/backend-db && docker compose up -d
 
-# Backend (~/timeline/global/backend) - e.g. via pm2
-cd ~/timeline/global/backend && pm2 start ecosystem.config.js
+# Backend (~/timeline/global/backend) - systemd app-backend.service
+sudo cp ~/timeline/global/backend/app-backend.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now app-backend
 ```
 
 ## Backend reverse proxy
