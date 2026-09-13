@@ -7,6 +7,7 @@ import json
 import requests as http_requests
 from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, Response
 from flask_apscheduler import APScheduler
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__, template_folder='.')
 
@@ -243,7 +244,7 @@ def backend_proxy(path=''):
 def secret_link(id):
     # Only try to unlock if the ID is numeric (to avoid clashing with other paths)
     if id.isdigit() and id in db:
-        return render_template('share_view.html', share_id=id)
+        return render_template('appsDeployed/share_view.html', share_id=id)
     return "Link not found or expired.", 404
 
 
