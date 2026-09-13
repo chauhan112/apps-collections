@@ -1,0 +1,19 @@
+[Unit]
+Description=apps-center (Flask gateway: app index + /apps/* hosting + /backend reverse proxy) [was pm2: apps-center]
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=raja
+Group=raja
+WorkingDirectory=/home/raja/timeline/global/apps-server
+Environment=HOME=/home/raja
+Environment=PYTHONUNBUFFERED=1
+Environment=PATH=/home/raja/timeline/global/apps-server/.venv/bin:/home/raja/.local/bin:/home/raja/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/home/raja/timeline/global/apps-server/.venv/bin/gunicorn --bind 0.0.0.0:8003 --workers 1 --threads 4 app:app
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

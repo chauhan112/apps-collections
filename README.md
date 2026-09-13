@@ -1,51 +1,53 @@
 # apps-collection
 
 Flask gateway that serves the app index, hosts deployed frontends under `/apps/`,
-and reverse-proxies API traffic to an internal Django **backend**. Runs as a
-single Docker Compose stack with one public entry point.
+and reverse-proxies `/backend/*` to the Django **backend**, which — like its
+PostgreSQL database — runs independently of this repo.
 
 ## Architecture
 
 ```
-                host :8003
+                host :8003  (systemd: app-center.service, bare gunicorn)
                     |
           +---------------------+
-          |   apps-collection   |   Flask gateway (this repo) -- ONLY public service
+          |   apps-collection   |   Flask gateway (this repo)
           +---------------------+
-                    |  /backend/*   (compose network DNS)
+                    |  /backend/*   -> BACKEND_TARGET from .env (default http://127.0.0.1:8500)
                     v
           +---------------------+
-          |       backend       |   Django + gunicorn  (internal only, :8500)
+          |      backend        |   Django + gunicorn (independent, own repo/deploy)
+          +---------------------+
+                    |  DATABASE_*  -> 127.0.0.1:5433
+                    v
+          +---------------------+
+          |  backend-postgres   |   PostgreSQL 17 (independent, ../backend-db)
           +---------------------+
 ```
 
-| service   | image / repo          | role                    | port    | published |
-|-----------|-----------------------|-------------------------|---------|-----------|
-| `apps`    | **this repo** (Flask) | gateway + frontend host | `:8003` | **yes**   |
-| `backend` | `chauhan112/backend`  | Django REST API         | `:8500` | no        |
+| piece              | repo / dir                   | role                     | port      |
+|--------------------|------------------------------|--------------------------|-----------|
+| `apps`             | **this repo** (Flask)        | gateway + frontend host  | `:8003` (systemd `app-center.service`) |
+| `backend`          | `chauhan112/backend`         | Django REST API          | `:8500` (run independently) |
+| `backend-postgres` | `../backend-db`              | PostgreSQL 17            | `:5433` (published; 5432 taken by lobehub) |
 
-`apps` is the only service with a host port. `backend` lives inside the compose
-network and is reached by the gateway via the service name (`http://backend:8500`).
-The private backend repo is cloned on the host and `COPY`ed into the image at
-build time — nothing is cloned during the build.
+## Run (systemd)
 
-## Build & run with Docker Compose
+The app runs as a bare host process via `app-center.service` (kept in this repo,
+installed into `/etc/systemd/system/`). No container involved.
 
 ```bash
-cd deploy
+# install / update after editing the unit
+sudo cp ~/timeline/global/apps-server/app-center.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now app-center
 
-# 1. Clone the private backend repo + scaffold env files and the SQLite DB
-./clone.sh
-
-# 2. (optional) tweak ports/URLs
-cp .env.example .env && $EDITOR .env
-
-# 3. Build the images and start the stack (detached)
-docker compose up -d --build
+# day-to-day via the bashrc sys-* helpers (pm2-style)
+sys-ls
+sys-status center
+sys-logs center
+sys-restart center
 ```
 
-The gateway waits for `backend` to pass its healthcheck before starting, so the
-proxy is ready when it comes up. Once running:
+Once running:
 
 - Gateway / index -> http://localhost:8003
 - Deployed frontend -> http://localhost:8003/apps/<name>/
@@ -53,23 +55,15 @@ proxy is ready when it comes up. Once running:
   e.g. http://localhost:8003/backend/api/doa/openapi.json
 - Backend admin -> http://localhost:8003/backend/admin/
 
-### Day-to-day
+The backend itself and its database are started from their own locations:
 
 ```bash
-cd deploy
-docker compose ps                                   # status (look for "healthy")
-docker compose logs -f apps backend                 # tails
-docker compose exec backend python manage.py shell  # shell into the backend
+# PostgreSQL (~/timeline/global/backend-db)
+cd ~/timeline/global/backend-db && docker compose up -d
 
-# rebuild after pulling the backend repo
-git -C services/backend pull && docker compose up -d --build
-
-docker compose down                  # stop  (deploy/data/backend.sqlite3 persists)
-docker compose down --remove-orphans # also clears any stale containers
+# Backend (~/timeline/global/backend) - e.g. via pm2
+cd ~/timeline/global/backend && pm2 start ecosystem.config.js
 ```
-
-> Full ops reference (env vars, Dockerfile, healthchecks, per-service config) is
-> in [`deploy/README.md`](deploy/README.md).
 
 ## Backend reverse proxy
 
@@ -80,8 +74,8 @@ prefix stripped, so frontends can call the API same-origin:
 
 All HTTP methods (GET/POST/PUT/PATCH/DELETE/OPTIONS) are proxied; body, query
 string, and headers are forwarded (hop-by-hop headers dropped). An unreachable
-backend yields `502`. The target is configurable via `BACKEND_TARGET` (default
-`http://backend:8500`) in `deploy/.env`.
+backend yields `502`. The target comes from `BACKEND_TARGET` in `.env`
+(default `http://127.0.0.1:8500`).
 
 ## Deploy a frontend
 
@@ -96,19 +90,12 @@ Flags: `--title`, `--description`, `--backend-url` (default `/backend`),
 `--no-register`. The app is served at `/apps/<name>/`; `apps.json` is read at
 page load, so no restart is needed. Run `invoke --list` for the granular
 `setup`/`build`/`deploy` tasks. A frontend should set `VITE_BACKEND_URL=/backend`
-so requests route through the proxy. Rebuild the gateway image after deploying a
-new frontend (`appsDeployed/` is part of its build context).
+so requests route through the proxy.
 
-## Configuration
+## Configuration (`.env`)
 
-| var              | default                      | meaning |
-|------------------|------------------------------|---------|
-| `APPS_PORT`      | `8003`                       | gateway host port (also gunicorn bind) |
-| `BASE_URL`       | `http://localhost:8003/apps` | base URL prefix for index links |
-| `BACKEND_TARGET` | `http://backend:8500`        | where `/backend/*` is proxied (internal) |
-| `BACKEND_PORT`   | `8500`                       | port `backend` binds to inside the network |
-| `CORS_ORIGINS`   | `*`                          | allowed origins for the gateway (comma-separated allowlist, or `*`) |
-
-Per-service container env lives in `deploy/env/backend.env` (template:
-`deploy/env/backend.env.example`). A backend superuser is auto-created on startup
-from the `DJANGO_SUPERUSER_*` vars.
+| var              | default                       | meaning |
+|------------------|-------------------------------|---------|
+| `BASE_URL`       | `/apps`                       | base URL prefix for index links |
+| `BACKEND_TARGET` | `http://127.0.0.1:8500`       | where `/backend/*` is proxied |
+| `CORS_ORIGINS`   | `*`                           | allowed origins (comma-separated allowlist, or `*`) |
