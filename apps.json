@@ -58,5 +58,10 @@
         "name": "GLM Quota",
         "description": "live update of quota uses",
         "url": "https://1-blog.github.io/quota/"
+    },
+    {
+        "name": "Tree Builder",
+        "description": "brain storm by making binary tree and organize the infos",
+        "url": "/tree/latest"
     }
 ]

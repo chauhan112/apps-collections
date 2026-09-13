@@ -10,7 +10,7 @@ entry point:
                |  apps-collection  |   <-- MAIN app (this repo, Flask gateway)
                +-------------------+
                   |
-    /backend/*   |  (inter-service DNS on the compose network)
+     /backend/*   |  (inter-service DNS on the compose network)
                   v
          +----------------+
          |    backend     |   <-- internal only
