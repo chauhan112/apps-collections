@@ -5,9 +5,9 @@
         "url": "/dom-ops/latest"
     },
     {
-        "name": "Ninox Table Explorer",
-        "description": "Just tools needed for my daily work when working with Ninox",
-        "url": "/ninox-table-explorer"
+        "name": "R-Agent",
+        "description": "My Personal agent development",
+        "url": "/agent/latest"
     },
     {
         "name": "Portfolio",
@@ -50,11 +50,6 @@
         "url": "/scanner/latest"
     },
     {
-        "name": "Coding Agent",
-        "description": "Code agent to build app automously",
-        "url": "https://code-agent.rajababu.space/"
-    },
-    {
         "name": "GLM Quota",
         "description": "live update of quota uses",
         "url": "https://1-blog.github.io/quota/"
@@ -63,5 +58,40 @@
         "name": "Tree Builder",
         "description": "brain storm by making binary tree and organize the infos",
         "url": "/tree/latest"
+    },
+    {
+        "name": "Discord",
+        "description": "Discord build by Bali. personal always working",
+        "url": "https://discord.rajababu.duckdns.org:4343/"
+    },
+    {
+        "name": "Terminal-Mini-PC",
+        "description": "Mini PC terminal",
+        "url": "https://terminal-mp.rajababu.space/"
+    },
+    {
+        "name": "VS-Code PC",
+        "description": "VSCode for pc",
+        "url": "https://vscode-pc.rajababu.duckdns.org:4343/"
+    },
+    {
+        "name": "VSCode-Mini-PC",
+        "description": "Mini PC terminal",
+        "url": "https://vscode-mp.rajababu.space/"
+    },
+    {
+        "name": "Terminal-Gaming-Laptop",
+        "description": "Terminal For Gaming Laptop",
+        "url": "https://terminal-gl.rajababu.space/"
+    },
+    {
+        "name": "VSCode-Gaming-Laptop",
+        "description": "VScode for Gaming laptop",
+        "url": "https://vscode-gl.rajababu.space/"
+    },
+    {
+        "name": "Terminal-PC",
+        "description": "PC terminal",
+        "url": "https://terminal-pc.rajababu.duckdns.org:4343/"
     }
 ]

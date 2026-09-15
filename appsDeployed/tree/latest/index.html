@@ -1,20 +1,29 @@
 <!doctype html>
-<html lang="en" class="h-full theme-paper select-none">
+<html lang="en" class="h-full select-none">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Tree Maker</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <script>
-      // Apply the stored theme before first paint to avoid a flash.
+      // Apply the stored theme's --tk-* vars before first paint to avoid a flash.
       ;(function () {
-        var id = localStorage.getItem('TREE_MAKER_THEME_ID') || 'paper'
-        document.documentElement.classList.remove('theme-paper')
-        document.documentElement.classList.add('theme-' + id)
+        var themes = {
+          'studio-violet': ['#09090b', '#101014', '#17171f', '#26262e', '#f4f4f5', '#a1a1aa', '#8b5cf6', '#7c3aed', '#ffffff', '#1f1f28'],
+          'dark-obsidian': ['#09090b', '#121215', '#18181b', '#27272a', '#f4f4f5', '#a1a1aa', '#16a34a', '#15803d', '#ffffff', '#27272a'],
+          'dark-midnight': ['#0b0f19', '#0f172a', '#1e293b', '#334155', '#f8fafc', '#94a3b8', '#2563eb', '#1d4ed8', '#ffffff', '#334155'],
+          'light-snow': ['#ffffff', '#f8fafc', '#f1f5f9', '#e2e8f0', '#0f172a', '#64748b', '#2563eb', '#1d4ed8', '#ffffff', '#e2e8f0'],
+          'light-sand': ['#fcfbf9', '#f5f2eb', '#eeeae1', '#e2ddd5', '#1c1917', '#78716c', '#d97706', '#b45309', '#ffffff', '#e2ddd5'],
+        }
+        var vars = ['canvas', 'panel', 'panel2', 'line', 'fg', 'muted', 'accent', 'accent-strong', 'on-accent', 'hover']
+        var colors = themes[localStorage.getItem('treemaker.theme.v1')] || themes['dark-obsidian']
+        for (var i = 0; i < vars.length; i++) {
+          document.documentElement.style.setProperty('--tk-' + vars[i], colors[i])
+        }
       })()
     </script>
-    <script type="module" crossorigin src="./assets/index-mSUJSzb7.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CO1NBYi7.css">
+    <script type="module" crossorigin src="./assets/index-DLxxgQr-.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C673Iw1D.css">
   </head>
   <body class="h-full font-sans text-sm antialiased">
     <div id="root" class="h-full"></div>
