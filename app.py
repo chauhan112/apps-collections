@@ -4,6 +4,9 @@ import datetime
 import os
 import hashlib
 import json
+import sqlite3
+from contextlib import contextmanager
+
 import requests as http_requests
 from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, Response
 from flask_apscheduler import APScheduler
@@ -164,20 +167,116 @@ def verify_captcha_solution(share_id, solution):
 
 
 # --- ROUTE 1: YOUR MAIN HOME PAGE ---
+def _load_apps():
+    """Read the app registry from apps.json (updated by `invoke deploy`)."""
+    apps_json_path = os.path.join(os.path.dirname(__file__), 'apps.json')
+    if not os.path.isfile(apps_json_path):
+        return []
+    with open(apps_json_path) as fh:
+        try:
+            return json.load(fh)
+        except json.JSONDecodeError:
+            return []
+
+
 @app.route('/')
 def main_dashboard():
     # Renders index.html as a Jinja template. BASE_URL comes from .env and the
     # apps list is read from apps.json at request time, so `invoke deploy`
     # additions appear on the next page load (no restart needed).
-    apps_json_path = os.path.join(os.path.dirname(__file__), 'apps.json')
-    apps_list = []
-    if os.path.isfile(apps_json_path):
-        with open(apps_json_path) as fh:
-            try:
-                apps_list = json.load(fh)
-            except json.JSONDecodeError:
-                apps_list = []
-    return render_template('index.html', base_url=app.config['BASE_URL'], apps=apps_list)
+    return render_template('index.html',
+                           base_url=app.config['BASE_URL'], apps=_load_apps())
+
+
+# --- SQLite meta store: favorites + recent launches (alongside apps.json) ---
+# apps.json stays the app registry (updated by `invoke deploy`); meta.db only
+# tracks per-app usage state. Apps are keyed by their raw apps.json url, so
+# re-deploys that rewrite the url automatically start a fresh record.
+META_DB_PATH = os.path.join(os.path.dirname(__file__), 'meta.db')
+RECENTS_LIMIT = 6
+
+
+@contextmanager
+def meta_db():
+    """Per-request connection: commit on success, rollback on error, always close."""
+    conn = sqlite3.connect(META_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        with conn:
+            yield conn
+    finally:
+        conn.close()
+
+
+def _init_meta_db():
+    with meta_db() as conn:
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS favorites ("
+            " app_url TEXT PRIMARY KEY,"
+            " created_at TEXT NOT NULL)"
+        )
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS usage ("
+            " app_url TEXT PRIMARY KEY,"
+            " use_count INTEGER NOT NULL DEFAULT 1,"
+            " last_used TEXT NOT NULL)"
+        )
+
+
+_init_meta_db()
+
+
+@app.route('/api/meta', methods=['GET'])
+def api_meta():
+    """Favorites and recently used apps for the index page."""
+    with meta_db() as conn:
+        favorites = [r['app_url'] for r in conn.execute(
+            "SELECT app_url FROM favorites ORDER BY created_at DESC")]
+        recents = [dict(r) for r in conn.execute(
+            "SELECT app_url, use_count, last_used FROM usage"
+            " ORDER BY last_used DESC LIMIT ?", (RECENTS_LIMIT,))]
+    # Drop records for apps no longer present in apps.json
+    known = {a.get('url') for a in _load_apps()}
+    favorites = [u for u in favorites if u in known]
+    recents = [r for r in recents if r['app_url'] in known]
+    return jsonify({"favorites": favorites, "recents": recents})
+
+
+@app.route('/api/favorite', methods=['POST'])
+def api_favorite():
+    """Toggle favorite for an app url. Body: {"url": "/notes/latest"}."""
+    url = (request.get_json(silent=True) or {}).get('url', '').strip()
+    if not url:
+        return jsonify({"error": "url required"}), 400
+    now = datetime.datetime.now().isoformat(timespec='seconds')
+    with meta_db() as conn:
+        exists = conn.execute(
+            "SELECT 1 FROM favorites WHERE app_url = ?", (url,)).fetchone()
+        if exists:
+            conn.execute("DELETE FROM favorites WHERE app_url = ?", (url,))
+            favorite = False
+        else:
+            conn.execute(
+                "INSERT INTO favorites (app_url, created_at) VALUES (?, ?)",
+                (url, now))
+            favorite = True
+    return jsonify({"favorite": favorite})
+
+
+@app.route('/api/launch', methods=['POST'])
+def api_launch():
+    """Record an app launch. Body: {"url": "/notes/latest"}."""
+    url = (request.get_json(silent=True) or {}).get('url', '').strip()
+    if not url:
+        return jsonify({"error": "url required"}), 400
+    now = datetime.datetime.now().isoformat(timespec='seconds')
+    with meta_db() as conn:
+        conn.execute(
+            "INSERT INTO usage (app_url, use_count, last_used) VALUES (?, 1, ?)"
+            " ON CONFLICT(app_url) DO UPDATE SET"
+            " use_count = use_count + 1, last_used = excluded.last_used",
+            (url, now))
+    return jsonify({"ok": True})
 
 
 @app.route('/apps/<path:path>')

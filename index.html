@@ -1,181 +1,659 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="ivory">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Raja Apps</title>
+        <link
+            id="favicon"
+            rel="icon"
+            href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23BE3714'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='19' font-weight='700' fill='%23fff'%3ER%3C/text%3E%3C/svg%3E"
+        />
+        <script>
+            (function () {
+                var themes = ["ivory", "cobalt", "midnight", "graphite"];
+                var t = null;
+                try {
+                    t = localStorage.getItem("apps-center-theme");
+                } catch (e) {}
+                if (themes.indexOf(t) === -1) {
+                    t =
+                        window.matchMedia &&
+                        matchMedia("(prefers-color-scheme: dark)").matches
+                            ? "midnight"
+                            : "ivory";
+                }
+                document.documentElement.setAttribute("data-theme", t);
+                document.documentElement.style.colorScheme =
+                    t === "midnight" || t === "graphite" ? "dark" : "light";
+            })();
+        </script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap"
+            rel="stylesheet"
+        />
         <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            bg: "rgb(var(--bg) / <alpha-value>)",
+                            surface: "rgb(var(--surface) / <alpha-value>)",
+                            surface2: "rgb(var(--surface2) / <alpha-value>)",
+                            ink: "rgb(var(--ink) / <alpha-value>)",
+                            ink2: "rgb(var(--ink2) / <alpha-value>)",
+                            line: "rgb(var(--line) / <alpha-value>)",
+                            accent: "rgb(var(--accent) / <alpha-value>)",
+                            "on-accent": "rgb(var(--on-accent) / <alpha-value>)",
+                            accent2: "rgb(var(--accent2) / <alpha-value>)",
+                            "on-accent2": "rgb(var(--on-accent2) / <alpha-value>)",
+                            hl: "rgb(var(--hl) / <alpha-value>)",
+                            ok: "rgb(var(--ok) / <alpha-value>)",
+                            danger: "rgb(var(--danger) / <alpha-value>)",
+                            star: "rgb(var(--star) / <alpha-value>)",
+                        },
+                        fontFamily: {
+                            sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+                            display: ['"Source Serif 4"', "Georgia", "serif"],
+                            mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
+                        },
+                    },
+                },
+            };
+        </script>
         <style>
-            @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Oswald:wght@400;700&family=Poppins:wght@300;400;600&display=swap");
+            /* THEME 1 · IVORY (light: warm paper + vermilion) */
+            :root,
+            [data-theme="ivory"] {
+                --bg: 250 246 238; --surface: 255 254 251; --surface2: 243 237 225;
+                --ink: 20 17 15; --ink2: 94 86 76; --line: 224 215 199;
+                --accent: 190 55 20; --on-accent: 255 255 255;
+                --accent2: 255 201 60; --on-accent2: 20 17 15;
+                --hl: 252 238 196; --ok: 18 120 84; --danger: 188 30 45;
+                --t1: 213 233 246; --t2: 228 221 244; --t3: 213 236 224; --t4: 247 222 211;
+                --shadow: 60 40 20; --star: 217 119 6;
+            }
+            /* THEME 2 · COBALT (light: cool white + electric blue) */
+            [data-theme="cobalt"] {
+                --bg: 244 246 251; --surface: 255 255 255; --surface2: 232 237 247;
+                --ink: 11 18 32; --ink2: 78 90 112; --line: 214 221 235;
+                --accent: 36 71 245; --on-accent: 255 255 255;
+                --accent2: 0 184 160; --on-accent2: 3 28 26;
+                --hl: 222 232 255; --ok: 8 122 98; --danger: 200 32 60;
+                --t1: 214 228 255; --t2: 226 220 255; --t3: 208 240 232; --t4: 255 226 214;
+                --shadow: 20 40 100; --star: 217 119 6;
+            }
+            /* THEME 3 · MIDNIGHT (dark: deep navy + amber) */
+            [data-theme="midnight"] {
+                --bg: 8 12 21; --surface: 16 23 38; --surface2: 25 34 54;
+                --ink: 236 240 248; --ink2: 150 163 186; --line: 38 49 72;
+                --accent: 255 176 32; --on-accent: 24 15 0;
+                --accent2: 96 204 255; --on-accent2: 4 20 32;
+                --hl: 56 45 14; --ok: 74 222 160; --danger: 255 112 128;
+                --t1: 22 46 78; --t2: 42 36 80; --t3: 20 60 56; --t4: 76 42 34;
+                --shadow: 0 0 0; --star: 252 211 77;
+            }
+            /* THEME 4 · GRAPHITE (dark: neutral black + mint) */
+            [data-theme="graphite"] {
+                --bg: 10 10 11; --surface: 20 20 22; --surface2: 30 30 33;
+                --ink: 246 246 247; --ink2: 160 160 168; --line: 46 46 52;
+                --accent: 62 224 160; --on-accent: 2 24 15;
+                --accent2: 255 112 140; --on-accent2: 36 4 12;
+                --hl: 18 54 42; --ok: 94 234 180; --danger: 255 112 140;
+                --t1: 28 42 56; --t2: 42 34 58; --t3: 26 48 40; --t4: 56 36 34;
+                --shadow: 0 0 0; --star: 252 211 77;
+            }
 
-            /* Custom Scrollbar for better aesthetics across themes */
-            ::-webkit-scrollbar {
-                width: 10px;
+            body {
+                background: rgb(var(--bg));
+                color: rgb(var(--ink));
+                font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+                -webkit-font-smoothing: antialiased;
+                text-rendering: optimizeLegibility;
             }
-            ::-webkit-scrollbar-track {
-                background: transparent;
-            }
+            ::selection { background: rgb(var(--accent) / 0.3); }
+            ::-webkit-scrollbar { width: 10px; }
+            ::-webkit-scrollbar-track { background: transparent; }
             ::-webkit-scrollbar-thumb {
-                background: rgba(150, 150, 150, 0.5);
+                background: rgb(var(--ink2) / 0.45);
                 border-radius: 5px;
+            }
+            ::-webkit-scrollbar-thumb:hover { background: rgb(var(--ink2) / 0.7); }
+            :focus-visible {
+                outline: 2px solid rgb(var(--accent));
+                outline-offset: 2px;
+                border-radius: 6px;
+            }
+            .font-display {
+                font-family: "Source Serif 4", Georgia, serif;
+                letter-spacing: -0.012em;
+            }
+
+            .av {
+                display: inline-grid;
+                place-items: center;
+                flex: none;
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                font-weight: 700;
+                letter-spacing: 0.02em;
+                border: 1px solid rgb(var(--line));
+                color: rgb(var(--ink));
+            }
+            .av.h0 { background: rgb(var(--t1)); }
+            .av.h1 { background: rgb(var(--t2)); }
+            .av.h2 { background: rgb(var(--t3)); }
+            .av.h3 { background: rgb(var(--t4)); }
+
+            .swatch {
+                width: 44px;
+                height: 32px;
+                border-radius: 8px;
+                border: 1px solid rgb(128 128 128 / 0.4);
+                position: relative;
+                overflow: hidden;
+                flex: none;
+            }
+            .swatch i {
+                position: absolute;
+                right: 5px;
+                bottom: 5px;
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+            }
+            .swatch b {
+                position: absolute;
+                left: 5px;
+                top: 6px;
+                width: 20px;
+                height: 4px;
+                border-radius: 2px;
+                opacity: 0.8;
+            }
+
+            kbd {
+                font-family: "JetBrains Mono", ui-monospace, monospace;
+                font-size: 11px;
+                padding: 1px 6px;
+                border-radius: 5px;
+                border: 1px solid rgb(var(--line));
+                background: rgb(var(--surface2));
+                color: rgb(var(--ink2));
+            }
+
+            .card-hover {
+                transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+            }
+            .card-hover:hover {
+                border-color: rgb(var(--ink) / 0.4);
+                transform: translateY(-2px);
+                box-shadow: 0 2px 4px rgb(var(--shadow) / 0.06),
+                    0 14px 30px -14px rgb(var(--shadow) / 0.28);
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(5px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .fade-in { animation: fadeIn 0.25s ease-out both; }
+
+            @media (prefers-reduced-motion: reduce) {
+                *, *::before, *::after {
+                    animation: none !important;
+                    transition: none !important;
+                }
             }
         </style>
     </head>
-    <body id="body" class="transition-colors duration-500 min-h-screen">
-        <div class="max-w-6xl mx-auto p-6 md:p-12">
-            <!-- Header & Theme Selector -->
-            <header
-                class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6"
+    <body class="min-h-screen">
+        <header class="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur">
+            <div
+                class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-3 px-4 py-4 sm:px-6 lg:px-8"
             >
-                <h1
-                    id="page-title"
-                    class="text-4xl md:text-5xl font-bold transition-colors duration-300"
-                >
-                    Raja DevToolKit
-                </h1>
-
-                <div class="flex items-center gap-3">
-                    <label
-                        for="theme-select"
-                        id="theme-label"
-                        class="font-semibold transition-colors duration-300"
-                        >Select Theme:</label
+                <div class="mr-auto flex items-center gap-3">
+                    <div
+                        class="grid h-10 w-10 place-items-center rounded-xl bg-accent font-display text-xl font-bold text-on-accent"
                     >
-                    <select
-                        id="theme-select"
-                        class="cursor-pointer transition-all duration-300 outline-none"
-                    >
-                        <option value="vintage-paper">Vintage Paper</option>
-                        <option value="cyberpunk">Cyberpunk</option>
-                        <option value="vaporwave">Vaporwave</option>
-                        <option value="neumorphism">Neumorphism</option>
-                        <option value="glass">Glassmorphism</option>
-                    </select>
+                        R
+                    </div>
+                    <div>
+                        <h1 class="font-display text-2xl font-bold leading-tight">
+                            Raja DevToolKit
+                        </h1>
+                        <p class="text-xs text-ink2" id="app-count"></p>
+                    </div>
                 </div>
-            </header>
 
-            <!-- App Grid -->
-            <main
-                id="app-grid"
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            >
-                <!-- Cards will be injected here via JavaScript -->
-            </main>
-        </div>
+                <div class="relative order-last w-full sm:order-none sm:w-72">
+                    <svg
+                        class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink2"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                    >
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="m20 20-3.5-3.5" />
+                    </svg>
+                    <input
+                        id="search"
+                        type="search"
+                        placeholder="Search apps…"
+                        autocomplete="off"
+                        class="h-10 w-full rounded-xl border border-line bg-surface pl-9 pr-9 text-sm text-ink transition placeholder:text-ink2/70 hover:border-ink/40 focus:border-accent focus:outline-none focus:ring-[3px] focus:ring-accent/25"
+                    />
+                    <kbd class="absolute right-3 top-1/2 -translate-y-1/2">/</kbd>
+                </div>
+
+                <div class="relative" id="theme-menu">
+                    <button
+                        id="theme-btn"
+                        type="button"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        class="inline-flex h-10 items-center gap-2 rounded-xl border border-line bg-surface px-3.5 text-sm font-semibold transition hover:border-ink/40 hover:bg-surface2"
+                    >
+                        <svg
+                            class="h-4 w-4 text-accent"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <circle cx="13.5" cy="6.5" r="1.9" />
+                            <circle cx="17.5" cy="10.5" r="1.9" />
+                            <circle cx="8.5" cy="7.5" r="1.9" />
+                            <circle cx="6.5" cy="12.5" r="1.9" />
+                            <path
+                                d="M12 2a10 10 0 0 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.4a4.6 4.6 0 0 0 4.6-4.6C22 6 17.5 2 12 2Z"
+                            />
+                        </svg>
+                        <span id="theme-label">Theme</span>
+                        <svg
+                            id="theme-caret"
+                            class="h-3.5 w-3.5 text-ink2 transition-transform"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div
+                        id="theme-pop"
+                        class="absolute right-0 top-[calc(100%+8px)] z-50 w-[300px] rounded-2xl border border-line bg-surface p-2 shadow-2xl"
+                        role="menu"
+                        hidden
+                    ></div>
+                </div>
+            </div>
+        </header>
+
+        <main class="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
+            <div
+                id="chips"
+                class="mt-6 flex flex-wrap items-center gap-2"
+                role="group"
+                aria-label="Filter apps"
+            ></div>
+            <p id="search-hint" class="mt-3 text-sm text-ink2" hidden></p>
+            <div id="sections"></div>
+            <div id="no-results" class="py-20 text-center" hidden></div>
+        </main>
+
+        <footer class="border-t border-line py-8 text-center text-xs text-ink2">
+            apps-center &middot; registry from apps.json &middot; favorites &amp; recents in meta.db
+        </footer>
 
         <script>
-            // App Data Type Structure
-            // type App = { name: string, description: string, url: string }
             const BASE_URL = {{ base_url|tojson }};
-            // App list injected server-side from apps.json (via Jinja).
-            // Updated automatically by `invoke deploy`; visible on next page load.
-            const apps = {{ apps|tojson }};
+            const APPS = {{ apps|tojson }};
 
-            // Theme Configuration with Tailwind Classes
-            const themes = {
-                "vintage-paper": {
-                    body: "bg-[#f4ecd8] text-[#3e2723] font-[Merriweather]",
-                    header: "text-[#5c4033]",
-                    label: "text-[#5c4033]",
-                    select: "bg-[#faebd7] border-2 border-[#5c4033] text-[#3e2723] px-4 py-2 rounded-none shadow-[2px_2px_0_#5c4033]",
-                    card: "border-2 border-[#5c4033] bg-[#faebd7] shadow-[6px_6px_0_#5c4033] p-8 flex flex-col justify-between transition-transform hover:-translate-y-1 hover:shadow-[8px_8px_0_#5c4033]",
-                    title: "text-2xl font-bold mb-3 text-[#5c4033]",
-                    desc: "text-[#3e2723] mb-6 leading-relaxed",
-                    link: "inline-flex justify-center items-center bg-[#5c4033] text-[#f4ecd8] px-6 py-2.5 font-bold uppercase tracking-wider text-sm transition-colors hover:bg-[#3e2723]",
-                },
-                cyberpunk: {
-                    body: "bg-black text-yellow-400 font-[Oswald] uppercase tracking-wider",
-                    header: "text-pink-500 drop-shadow-[0_0_10px_rgba(236,72,153,0.8)]",
-                    label: "text-cyan-400",
-                    select: "bg-black border-2 border-yellow-400 text-yellow-400 px-4 py-2 font-bold focus:border-pink-500 focus:shadow-[0_0_10px_#ec4899]",
-                    card: "border-2 border-cyan-400 bg-gray-900 shadow-[4px_4px_0_#ec4899] p-8 flex flex-col justify-between transition-all hover:shadow-[8px_8px_0_#eab308] relative overflow-hidden group",
-                    title: "text-2xl font-bold mb-3 text-yellow-400 group-hover:text-cyan-400 transition-colors",
-                    desc: "text-cyan-100 mb-6 normal-case font-sans tracking-normal opacity-90",
-                    link: "inline-flex justify-center items-center bg-pink-600 text-white border-2 border-pink-400 px-6 py-2.5 font-bold transition-all hover:bg-yellow-400 hover:text-black hover:border-yellow-400 shadow-[0_0_10px_#ec4899]",
-                },
-                vaporwave: {
-                    body: "bg-gradient-to-br from-indigo-300 via-purple-400 to-pink-300 text-white font-[Poppins]",
-                    header: "text-cyan-300 font-black tracking-widest drop-shadow-[3px_3px_0_#db2777]",
-                    label: "text-white font-bold drop-shadow-md",
-                    select: "bg-white/20 backdrop-blur-md border border-white/40 text-purple-900 font-bold px-4 py-2 rounded-xl shadow-lg",
-                    card: "bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-8 flex flex-col justify-between shadow-[0_8px_32px_rgba(31,38,135,0.37)] transition-all hover:bg-white/30 hover:-translate-y-2",
-                    title: "text-2xl font-bold mb-3 text-cyan-200 drop-shadow-[2px_2px_0_#9d174d]",
-                    desc: "text-white mb-6 leading-relaxed font-light drop-shadow-md",
-                    link: "inline-flex justify-center items-center bg-gradient-to-r from-cyan-400 to-blue-500 text-white rounded-full px-6 py-2.5 font-bold shadow-lg transition-all hover:from-pink-400 hover:to-purple-500 hover:scale-105",
-                },
-                neumorphism: {
-                    body: "bg-[#e0e5ec] text-[#4a5568] font-[Poppins]",
-                    header: "text-[#2d3748]",
-                    label: "text-[#4a5568]",
-                    select: "bg-[#e0e5ec] rounded-xl text-[#4a5568] px-4 py-2 font-semibold shadow-[4px_4px_8px_rgb(163,177,198,0.6),-4px_-4px_8px_rgba(255,255,255,0.5)] appearance-none",
-                    card: "bg-[#e0e5ec] rounded-[2rem] p-8 flex flex-col justify-between shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] transition-all hover:shadow-[12px_12px_20px_rgb(163,177,198,0.7),-12px_-12px_20px_rgba(255,255,255,0.6)]",
-                    title: "text-2xl font-bold mb-3 text-[#2d3748]",
-                    desc: "text-[#718096] mb-6 leading-relaxed",
-                    link: "inline-flex justify-center items-center bg-[#e0e5ec] text-[#4a5568] rounded-xl px-6 py-2.5 font-bold shadow-[4px_4px_8px_rgb(163,177,198,0.6),-4px_-4px_8px_rgba(255,255,255,0.5)] transition-all hover:shadow-[inset_2px_2px_5px_rgb(163,177,198,0.6),inset_-2px_-2px_5px_rgba(255,255,255,0.5)] active:shadow-[inset_4px_4px_8px_rgb(163,177,198,0.6),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]",
-                },
-                glass: {
-                    body: "bg-gradient-to-tr from-slate-900 via-indigo-900 to-slate-900 text-white font-[Poppins]",
-                    header: "text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300 font-bold tracking-wide drop-shadow-md",
-                    label: "text-blue-200 font-medium",
-                    select: "bg-white/10 backdrop-blur-md border border-white/20 text-white px-4 py-2 rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)] outline-none focus:bg-white/20",
-                    card: "bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 flex flex-col justify-between shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-white/20 hover:border-white/30 hover:-translate-y-1",
-                    title: "text-2xl font-bold mb-3 text-white tracking-wide",
-                    desc: "text-indigo-100/80 mb-6 leading-relaxed font-light",
-                    link: "inline-flex justify-center items-center bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl px-6 py-2.5 font-semibold shadow-lg transition-all hover:bg-white/30 hover:border-white/40",
-                },
+            const THEMES = {
+                ivory: { label: "Ivory", kind: "Light", desc: "Warm paper + vermilion", bg: "#faf6ee", ink: "#14110f", dot: "#be3714", favicon: "#BE3714" },
+                cobalt: { label: "Cobalt", kind: "Light", desc: "Cool white + electric blue", bg: "#f4f6fb", ink: "#0b1220", dot: "#2447f5", favicon: "#2447F5" },
+                midnight: { label: "Midnight", kind: "Dark", desc: "Deep navy + amber", bg: "#080c15", ink: "#ecf0f8", dot: "#ffb020", favicon: "#FFB020" },
+                graphite: { label: "Graphite", kind: "Dark", desc: "Neutral black + mint", bg: "#0a0a0b", ink: "#f6f6f7", dot: "#3ee0a0", favicon: "#3EE0A0" },
+            };
+            const THEME_KEY = "apps-center-theme";
+            const COLLAPSE_KEY = "apps-center-collapse";
+
+            const state = {
+                favorites: new Set(),
+                usage: {},
+                mode: "all",
+                query: "",
+                collapsed: JSON.parse(localStorage.getItem(COLLAPSE_KEY) || "{}"),
             };
 
-            // DOM Elements
-            const bodyEl = document.getElementById("body");
-            const headerEl = document.getElementById("page-title");
-            const labelEl = document.getElementById("theme-label");
-            const selectEl = document.getElementById("theme-select");
-            const gridEl = document.getElementById("app-grid");
+            const $ = (id) => document.getElementById(id);
+            const esc = (s) =>
+                String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+            const appUrl = (a) => (a.url.startsWith("http") ? a.url : BASE_URL + a.url);
+            const isExternal = (a) => a.url.startsWith("http");
 
-            // Function to apply theme
-            function applyTheme(themeName) {
-                const theme = themes[themeName];
-                if (!theme) return;
-
-                // Update Global Elements
-                bodyEl.className = `transition-all duration-500 min-h-screen ${theme.body}`;
-                headerEl.className = `text-4xl md:text-5xl font-bold transition-colors duration-300 ${theme.header}`;
-                labelEl.className = `font-semibold transition-colors duration-300 ${theme.label}`;
-                selectEl.className = `cursor-pointer transition-all duration-300 outline-none ${theme.select}`;
-
-                // Render App Cards
-                gridEl.innerHTML = apps
-                    .map(
-                        (app) => `
-        <div class="${theme.card}">
-          <div>
-            <h2 class="${theme.title}">${app.name}</h2>
-            <p class="${theme.desc}">${app.description}</p>
-          </div>
-          <a href="${app.url.startsWith('http') ? app.url : BASE_URL + app.url}" class="${theme.link}" aria-label="Open ${app.name}">
-            Launch App
-          </a>
-        </div>
-      `,
-                    )
-                    .join("");
+            function faviconHref(color) {
+                const svg =
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
+                    '<rect width="32" height="32" rx="8" fill="' + color + '"/>' +
+                    '<text x="16" y="23" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="700" fill="#fff">R</text>' +
+                    "</svg>";
+                return "data:image/svg+xml," + encodeURIComponent(svg);
             }
 
-            // Event Listener for Theme Selector
-            selectEl.addEventListener("change", (e) => {
-                applyTheme(e.target.value);
-                localStorage.setItem("gib21-tools-theme", e.target.value);
+            function applyTheme(name) {
+                const t = THEMES[name];
+                if (!t) return;
+                document.documentElement.setAttribute("data-theme", name);
+                document.documentElement.style.colorScheme = t.kind === "Dark" ? "dark" : "light";
+                document.getElementById("favicon").href = faviconHref(t.favicon);
+                $("theme-label").textContent = t.label;
+                try { localStorage.setItem(THEME_KEY, name); } catch (e) {}
+                document.querySelectorAll("[data-set-theme]").forEach((b) => {
+                    b.setAttribute("aria-checked", String(b.dataset.setTheme === name));
+                });
+            }
+
+            function buildThemePopover() {
+                const pop = $("theme-pop");
+                let html = "";
+                for (const kind of ["Light", "Dark"]) {
+                    html +=
+                        '<p class="px-2 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink2">' +
+                        kind + "</p>";
+                    for (const [name, t] of Object.entries(THEMES)) {
+                        if (t.kind !== kind) continue;
+                        html +=
+                            '<button type="button" role="menuitemradio" data-set-theme="' + name + '" ' +
+                            'class="flex w-full items-center gap-3 rounded-xl border border-transparent p-2 text-left transition hover:bg-surface2 aria-checked:border-accent aria-checked:bg-hl">' +
+                            '<span class="swatch" style="background:' + t.bg + '">' +
+                            '<b style="background:' + t.ink + '"></b><i style="background:' + t.dot + '"></i></span>' +
+                            '<span class="min-w-0 flex-1"><span class="block text-sm font-semibold text-ink">' + t.label +
+                            '</span><span class="block text-xs text-ink2">' + t.desc + "</span></span>" +
+                            '<svg class="check h-4 w-4 flex-none text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' +
+                            "</button>";
+                    }
+                }
+                pop.innerHTML = html;
+                pop.querySelectorAll("[data-set-theme]").forEach((b) => {
+                    b.querySelector(".check").style.visibility =
+                        b.dataset.setTheme === document.documentElement.getAttribute("data-theme") ? "visible" : "hidden";
+                    b.addEventListener("click", () => {
+                        applyTheme(b.dataset.setTheme);
+                        closeThemePop();
+                    });
+                });
+            }
+
+            function openThemePop() {
+                $("theme-pop").hidden = false;
+                $("theme-btn").setAttribute("aria-expanded", "true");
+                $("theme-caret").style.transform = "rotate(180deg)";
+            }
+            function closeThemePop() {
+                $("theme-pop").hidden = true;
+                $("theme-btn").setAttribute("aria-expanded", "false");
+                $("theme-caret").style.transform = "";
+            }
+            const themePopOpen = () => !$("theme-pop").hidden;
+
+            function avHue(name) {
+                let h = 0;
+                for (const c of name) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+                return h % 4;
+            }
+
+            function timeAgo(iso) {
+                const s = (Date.now() - new Date(iso).getTime()) / 1000;
+                if (s < 60) return "just now";
+                if (s < 3600) return Math.floor(s / 60) + "m ago";
+                if (s < 86400) return Math.floor(s / 3600) + "h ago";
+                if (s < 604800) return Math.floor(s / 86400) + "d ago";
+                return new Date(iso).toLocaleDateString();
+            }
+
+            const starIcon =
+                '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">' +
+                '<path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9L12 2.6z"/></svg>';
+            const launchIcon =
+                '<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M7 17 17 7M8 7h9v9"/></svg>';
+
+            function cardHTML(app) {
+                const key = app.url;
+                const fav = state.favorites.has(key);
+                const rec = state.usage[key];
+                const ext = isExternal(app);
+                const target = ext ? ' target="_blank" rel="noopener"' : "";
+                const ref = rec
+                    ? '<span class="font-mono text-[11px] text-ink2">' + timeAgo(rec.last_used) + " &middot; " + rec.use_count + "&times;</span>"
+                    : "<span></span>";
+                return (
+                    '<article class="card-hover flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4 shadow-sm">' +
+                    '<div class="flex items-start gap-3">' +
+                    '<span class="av h' + avHue(app.name) + '">' + esc((app.name || "?").trim().charAt(0).toUpperCase()) + "</span>" +
+                    '<div class="min-w-0 flex-1">' +
+                    '<h3 class="truncate font-semibold leading-snug"><a class="launch transition hover:text-accent" data-url="' + esc(key) + '" href="' + esc(appUrl(app)) + '"' + target + ">" + esc(app.name) + "</a></h3>" +
+                    '<p class="mt-1 line-clamp-2 text-sm leading-relaxed text-ink2">' + esc(app.description || "") + "</p></div>" +
+                    '<button type="button" class="fav-btn grid h-8 w-8 flex-none place-items-center rounded-lg border border-line text-ink2/60 transition hover:border-star hover:text-star aria-pressed:border-transparent aria-pressed:bg-star/15 aria-pressed:text-star" data-url="' + esc(key) + '" aria-pressed="' + fav + '" title="' + (fav ? "Remove favorite" : "Add favorite") + '">' + starIcon + "</button></div>" +
+                    '<div class="mt-auto flex items-center justify-between gap-2 border-t border-line pt-3">' + ref +
+                    '<a class="launch inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-on-accent transition hover:brightness-110" data-url="' + esc(key) + '" href="' + esc(appUrl(app)) + '"' + target + ">Launch " + launchIcon + "</a></div></article>"
+                );
+            }
+
+            function emptyHTML(icon, title, sub) {
+                return (
+                    '<div class="col-span-full grid place-items-center gap-2 rounded-2xl border border-dashed border-line bg-surface/50 px-6 py-10 text-center">' +
+                    '<span class="grid h-11 w-11 place-items-center rounded-full bg-hl text-ink2">' + icon + "</span>" +
+                    '<p class="text-sm font-semibold">' + title + "</p>" +
+                    '<p class="text-xs text-ink2">' + sub + "</p></div>"
+                );
+            }
+
+            const matches = (a) => {
+                if (!state.query) return true;
+                const q = state.query.toLowerCase();
+                return (a.name + " " + (a.description || "")).toLowerCase().includes(q);
+            };
+            const favApps = () => APPS.filter((a) => state.favorites.has(a.url) && matches(a));
+            const recentApps = () =>
+                Object.values(state.usage)
+                    .sort((x, y) => new Date(y.last_used) - new Date(x.last_used))
+                    .slice(0, 6)
+                    .map((r) => APPS.find((a) => a.url === r.app_url))
+                    .filter(Boolean)
+                    .filter(matches);
+            const allApps = () => APPS.filter(matches);
+
+            function sectionHTML(id, icon, title, items, { emptyFn, showEmpty }) {
+                const open = !state.collapsed[id];
+                const head =
+                    '<div class="mb-4 flex items-center gap-2.5 border-t border-ink/85 pt-4">' +
+                    '<span class="text-ink2">' + icon + "</span>" +
+                    '<h2 class="font-display text-xl font-bold">' + title + "</h2>" +
+                    '<span class="inline-flex h-5 items-center rounded-full bg-surface2 px-2 text-[11px] font-semibold text-ink2">' + items.length + "</span>" +
+                    '<button type="button" data-collapse="' + id + '" class="ml-auto grid h-8 w-8 place-items-center rounded-lg text-ink2 transition hover:bg-surface2 hover:text-ink" title="' + (open ? "Collapse" : "Expand") + '" aria-expanded="' + open + '">' +
+                    '<svg class="h-4 w-4 transition-transform' + (open ? "" : " -rotate-90") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button></div>';
+                let body;
+                if (items.length === 0 && showEmpty && emptyFn) body = emptyFn();
+                else
+                    body =
+                        '<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">' +
+                        items.map(cardHTML).join("") +
+                        "</div>";
+                return (
+                    '<section id="sec-' + id + '" class="mt-10 fade-in">' + head +
+                    '<div class="' + (open ? "" : "hidden") + '">' + body + "</div></section>"
+                );
+            }
+
+            const starSm =
+                '<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9L12 2.6z"/></svg>';
+            const clockIcon =
+                '<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>';
+            const gridIcon =
+                '<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>';
+
+            function render() {
+                const chips = [
+                    ["all", "All", APPS.length, gridIcon],
+                    ["favorites", "Favorites", APPS.filter((a) => state.favorites.has(a.url)).length, starSm],
+                    ["recent", "Recent", Math.min(6, Object.keys(state.usage).length), clockIcon],
+                ];
+                $("chips").innerHTML = chips
+                    .map(
+                        ([id, label, n, icon]) =>
+                            '<button type="button" data-mode="' + id + '" aria-pressed="' + (state.mode === id) + '" ' +
+                            'class="inline-flex h-9 items-center gap-2 whitespace-nowrap rounded-full border border-line bg-surface px-3.5 text-sm font-medium transition hover:border-ink/40 aria-pressed:border-transparent aria-pressed:bg-ink aria-pressed:text-bg">' +
+                            icon + label + '<span class="text-xs opacity-70">' + n + "</span></button>"
+                    )
+                    .join("");
+
+                const searching = !!state.query;
+                let html = "";
+                if (state.mode === "all" || state.mode === "favorites") {
+                    const items = favApps();
+                    const show = items.length > 0 || state.mode === "favorites" || (!searching && state.favorites.size === 0);
+                    if (show)
+                        html += sectionHTML("fav", starSm, "Favorites", items, {
+                            emptyFn: () => emptyHTML(starSm, "No favorites", searching ? "No favorites match your search" : "Star an app to pin it here for quick access"),
+                            showEmpty: true,
+                        });
+                }
+                if (state.mode === "all" || state.mode === "recent") {
+                    const items = recentApps();
+                    if (items.length > 0 || state.mode === "recent")
+                        html += sectionHTML("recent", clockIcon, "Recently Used", items, {
+                            emptyFn: () => emptyHTML(clockIcon, "No recent activity", searching ? "No recent apps match your search" : "Apps you launch will show up here"),
+                            showEmpty: true,
+                        });
+                }
+                if (state.mode === "all")
+                    html += sectionHTML("all", gridIcon, "All Apps", allApps(), { emptyFn: () => "", showEmpty: false });
+
+                const none =
+                    state.mode === "all" && searching &&
+                    allApps().length === 0 && favApps().length === 0 && recentApps().length === 0;
+                $("no-results").hidden = !none;
+                if (none)
+                    $("no-results").innerHTML =
+                        '<p class="font-display text-lg font-bold">No apps found</p><p class="mt-1 text-sm text-ink2">Nothing matches &ldquo;' + esc(state.query) + "&rdquo;</p>";
+
+                const hint = $("search-hint");
+                hint.hidden = !searching;
+                if (searching) hint.textContent = allApps().length + " of " + APPS.length + ' apps match "' + state.query + '"';
+
+                $("sections").innerHTML = html;
+                $("app-count").textContent = APPS.length + " apps \u00b7 personal launcher";
+            }
+
+            async function loadMeta() {
+                try {
+                    const res = await fetch("/api/meta");
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    state.favorites = new Set(data.favorites);
+                    state.usage = {};
+                    for (const r of data.recents) state.usage[r.app_url] = r;
+                    render();
+                } catch (e) {}
+            }
+
+            async function toggleFav(url) {
+                const was = state.favorites.has(url);
+                state.favorites[was ? "delete" : "add"](url);
+                render();
+                try {
+                    const res = await fetch("/api/favorite", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ url }),
+                    });
+                    if (!res.ok) throw new Error("bad status");
+                    const data = await res.json();
+                    state.favorites[data.favorite ? "add" : "delete"](url);
+                } catch (e) {
+                    state.favorites[was ? "add" : "delete"](url);
+                }
+                render();
+            }
+
+            document.addEventListener("click", (e) => {
+                const favBtn = e.target.closest(".fav-btn");
+                if (favBtn) {
+                    toggleFav(favBtn.dataset.url);
+                    return;
+                }
+                const launch = e.target.closest("a.launch");
+                if (launch && launch.dataset.url) {
+                    fetch("/api/launch", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ url: launch.dataset.url }),
+                        keepalive: true,
+                    }).catch(() => {});
+                }
+                const collapse = e.target.closest("[data-collapse]");
+                if (collapse) {
+                    const id = collapse.dataset.collapse;
+                    state.collapsed[id] = !state.collapsed[id];
+                    try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify(state.collapsed)); } catch (err) {}
+                    render();
+                    return;
+                }
+                const mode = e.target.closest("[data-mode]");
+                if (mode) {
+                    state.mode = mode.dataset.mode;
+                    render();
+                    return;
+                }
+                if (!e.target.closest("#theme-menu") && themePopOpen()) closeThemePop();
             });
 
-            // Initialize with default theme
-            // on dom content loaded
-            window.addEventListener("DOMContentLoaded", () => {
-                const defaultTheme =
-                    localStorage.getItem("gib21-tools-theme") || "glass";
-
-                selectEl.value = defaultTheme;
-                applyTheme(defaultTheme);
+            $("theme-btn").addEventListener("click", () => {
+                themePopOpen() ? closeThemePop() : openThemePop();
             });
+
+            $("search").addEventListener("input", (e) => {
+                state.query = e.target.value.trim();
+                render();
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") {
+                    if (themePopOpen()) closeThemePop();
+                    else if ($("search").value) {
+                        $("search").value = "";
+                        state.query = "";
+                        render();
+                    }
+                    return;
+                }
+                if (e.key === "/" && document.activeElement !== $("search")) {
+                    e.preventDefault();
+                    $("search").focus();
+                }
+            });
+
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === "visible") loadMeta();
+            });
+
+            buildThemePopover();
+            applyTheme(document.documentElement.getAttribute("data-theme") || "ivory");
+            render();
+            loadMeta();
         </script>
     </body>
 </html>

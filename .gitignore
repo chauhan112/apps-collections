@@ -219,3 +219,7 @@ __marimo__/
 
 .DS_Store
 temp
+
+# App-center favorites/recents sqlite store (runtime data, not source)
+meta.db
+meta.db-journal
